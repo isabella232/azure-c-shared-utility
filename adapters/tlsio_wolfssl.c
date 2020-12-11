@@ -108,18 +108,18 @@ static void* tlsio_wolfssl_CloneOption(const char* name, const void* value)
         #ifdef INVALID_DEVID
         else if(strcmp(name, OPTION_WOLFSSL_SET_DEVICE_ID) == 0 )
         {
-             int* value_clone; 
-  
-             if ((value_clone = malloc(sizeof(int))) == NULL) 
-             { 
-                 LogError("unable to clone device id option"); 
-             } 
-             else 
-             { 
-                 *value_clone = *(int*)value; 
-             } 
+             int* value_clone;
 
-             result = value_clone; 
+             if ((value_clone = malloc(sizeof(int))) == NULL)
+             {
+                 LogError("unable to clone device id option");
+             }
+             else
+             {
+                 *value_clone = *(int*)value;
+             }
+
+             result = value_clone;
         }
         #endif
         else
@@ -564,6 +564,14 @@ static int create_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
 
         tls_io_instance->tlsio_state = TLSIO_STATE_NOT_OPEN;
         result = 0;
+
+#ifdef HAVE_SECURE_RENEGOTIATION
+        if(wolfSSL_UseSecureRenegotiation(tls_io_instance->ssl) != SSL_SUCCESS)
+        {
+            return MU_FAILURE;
+        }
+        printf("secure renegotiation is enabled\n");
+#endif
     }
     return result;
 }
