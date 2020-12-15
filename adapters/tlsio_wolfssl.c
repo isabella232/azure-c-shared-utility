@@ -108,18 +108,18 @@ static void* tlsio_wolfssl_CloneOption(const char* name, const void* value)
         #ifdef INVALID_DEVID
         else if(strcmp(name, OPTION_WOLFSSL_SET_DEVICE_ID) == 0 )
         {
-             int* value_clone; 
-  
-             if ((value_clone = malloc(sizeof(int))) == NULL) 
-             { 
-                 LogError("unable to clone device id option"); 
-             } 
-             else 
-             { 
-                 *value_clone = *(int*)value; 
-             } 
+             int* value_clone;
 
-             result = value_clone; 
+             if ((value_clone = malloc(sizeof(int))) == NULL)
+             {
+                 LogError("unable to clone device id option");
+             }
+             else
+             {
+                 *value_clone = *(int*)value;
+             }
+
+             result = value_clone;
         }
         #endif
         else
@@ -538,6 +538,15 @@ static void destroy_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
     tls_io_instance->ssl = NULL;
 }
 
+static void myLogger(const int logLevel, const char *const logMessage)
+{
+	if (logLevel == 0)
+		{
+		printf("error\n");
+		}
+	printf("MSG: %d %s\n", logLevel, logMessage);
+}
+
 static int create_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
 {
     int result;
@@ -564,6 +573,11 @@ static int create_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
 
         tls_io_instance->tlsio_state = TLSIO_STATE_NOT_OPEN;
         result = 0;
+
+        int iDbg = wolfSSL_Debugging_ON();
+        printf("debugOn returns %d\n", iDbg);
+        iDbg = wolfSSL_SetLoggingCb(myLogger);
+        printf("setCallback logger returns %d\n", iDbg);
     }
     return result;
 }
