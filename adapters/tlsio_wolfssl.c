@@ -538,6 +538,15 @@ static void destroy_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
     tls_io_instance->ssl = NULL;
 }
 
+static void myLogger(const int logLevel, const char *const logMessage)
+{
+	if (logLevel == 0)
+		{
+		printf("error\n");
+		}
+	printf("MSG: %d %s\n", logLevel, logMessage);
+}
+
 static int create_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
 {
     int result;
@@ -564,6 +573,11 @@ static int create_wolfssl_instance(TLS_IO_INSTANCE* tls_io_instance)
 
         tls_io_instance->tlsio_state = TLSIO_STATE_NOT_OPEN;
         result = 0;
+
+        int iDbg = wolfSSL_Debugging_ON();
+        printf("debugOn returns %d\n", iDbg);
+        iDbg = wolfSSL_SetLoggingCb(myLogger);
+        printf("setCallback logger returns %d\n", iDbg);
 
 #ifdef HAVE_SECURE_RENEGOTIATION
         if(wolfSSL_UseSecureRenegotiation(tls_io_instance->ssl) != SSL_SUCCESS)
